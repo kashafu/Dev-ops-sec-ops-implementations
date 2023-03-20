@@ -6,6 +6,14 @@
       "type": "devenv"
     },
     {
+      "name": "fastapi",
+      "type": "runtime"
+    },
+    {
+      "name": "uvicorn[standard]",
+      "type": "runtime"
+    },
+    {
       "name": "pytest",
       "version": "6.2.1",
       "type": "test"
