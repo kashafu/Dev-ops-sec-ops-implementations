@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Dict
+from typing import Dict, List
 
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -20,7 +20,7 @@ items: Dict[str, TodoItem] = {}
 
 
 @app.get('/items')
-def get_items() -> list[TodoItem]:
+def get_items() -> List[TodoItem]:
     return list(items.values())
 
 
