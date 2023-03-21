@@ -1,6 +1,9 @@
 image:
   file: .gitpod.Dockerfile
 
+tasks:
+  - command: projen dev
+
 ports:
     - name: Backend
       port: 8000
