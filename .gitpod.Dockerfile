@@ -5,5 +5,5 @@ USER gitpod
 ADD requirements.txt .
 ADD requirements-dev.txt .
 
-RUN pip3 -r requirements.txt
-RUN pip3 -r requirements-dev.txt
+RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements-dev.txt
