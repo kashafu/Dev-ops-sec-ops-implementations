@@ -7,41 +7,41 @@ from pydantic import BaseModel
 app = FastAPI()
 
 
-class TodoItemRequest(BaseModel):
+class TaskRequest(BaseModel):
     name: str
     description: str
 
 
-class TodoItem(TodoItemRequest):
+class Task(TaskRequest):
     item_id: int
 
 
-items: Dict[str, TodoItem] = {}
+tasks: Dict[str, Task] = {}
 
 
-@app.get('/items')
-def get_items() -> List[TodoItem]:
-    return list(items.values())
+@app.get('/tasks')
+def get_tasks() -> List[Task]:
+    return list(tasks.values())
 
 
-@app.get('/items/{item_id}')
-def get_items(item_id: str) -> TodoItem:
-    return items[item_id]
+@app.get('/tasks/{item_id}')
+def get_tasks(item_id: str) -> Task:
+    return tasks[item_id]
 
 
-@app.put('/items/{item_id}')
-def update_item(item_id: str, item: TodoItemRequest) -> None:
-    items[item_id] = TodoItem(
+@app.put('/tasks/{item_id}')
+def update_item(item_id: str, item: TaskRequest) -> None:
+    tasks[item_id] = Task(
         item_id=item_id,
         name=item.name,
         description=item.description,
     )
 
 
-@app.post('/items')
-def create_item(item: TodoItemRequest):
-    item_id = str(len(items) + 1)
-    items[item_id] = TodoItem(
+@app.post('/tasks')
+def create_item(item: TaskRequest):
+    item_id = str(len(tasks) + 1)
+    tasks[item_id] = Task(
         item_id=item_id,
         name=item.name,
         description=item.description,
