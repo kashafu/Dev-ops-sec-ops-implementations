@@ -9,7 +9,13 @@ project = PythonProject(
     deps=[
         'fastapi',
         'uvicorn[standard]'
-    ]
+    ],
+    dev_deps=[
+        'attrs',
+        'pylint',
+        'pytest',
+    ],
+    github=False,
 )
 
 project.add_git_ignore('.idea')
