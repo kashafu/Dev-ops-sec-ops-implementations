@@ -6,6 +6,14 @@
       "type": "devenv"
     },
     {
+      "name": "pylint",
+      "type": "devenv"
+    },
+    {
+      "name": "pytest",
+      "type": "devenv"
+    },
+    {
       "name": "fastapi",
       "type": "runtime"
     },

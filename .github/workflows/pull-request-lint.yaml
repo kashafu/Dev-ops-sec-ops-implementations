@@ -1,4 +1,4 @@
-name: Hello World
+name: Check with linter on PR
 
 on:
   pull_request:
