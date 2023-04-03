@@ -11,8 +11,9 @@ project = PythonProject(
         'uvicorn[standard]'
     ],
     dev_deps=[
+        'attrs',
         'pylint',
-        'pytest'
+        'pytest',
     ],
     github=False,
 )
