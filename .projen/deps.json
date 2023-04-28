@@ -18,6 +18,14 @@
       "type": "devenv"
     },
     {
+      "name": "pytest-cov",
+      "type": "devenv"
+    },
+    {
+      "name": "pytest-xdist",
+      "type": "devenv"
+    },
+    {
       "name": "fastapi",
       "type": "runtime"
     },
