@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from uuid import uuid4
 from typing import Dict, List
 
 from fastapi import FastAPI
 from pydantic import BaseModel
-import json
+from starlette.responses import RedirectResponse
 import redis
 
 app = FastAPI()
@@ -17,10 +18,15 @@ class TaskRequest(BaseModel):
 
 
 class Task(TaskRequest):
-    item_id: int
+    id: str
 
 
 tasks: Dict[str, Task] = {}
+
+
+@app.get('/')
+def redirect_to_tasks() -> None:
+    return RedirectResponse(url='/tasks')
 
 
 @app.get('/tasks')
@@ -29,42 +35,41 @@ def get_tasks() -> List[Task]:
 
     tasks = []
     for key in keys:
-        print(key)
-        value = json.loads(r.get(key))
+        task = r.json().get(key)
+        id = key[6:]
         tasks.append(Task(
-            item_id=key,
-            name= value['name'],
-            description = value['description'],
+            id=id,
+            name=task['name'],
+            description=task['description'],
         ))
     return tasks
 
 
-@app.get('/tasks/{item_id}')
-def get_task(item_id: str) -> Task:
-    value = json.loads(r.get(f'tasks:{item_id}'))
+@app.get('/tasks/{task_id}')
+def get_task(task_id: str) -> Task:
+    task = r.json().get(f'tasks:{task_id}')
     return Task(
-        item_id= item_id,
-        name= value['name'],
-        description = value['description'],
+        id=task_id,
+        name=task['name'],
+        description=task['description'],
     )
 
 
 @app.put('/tasks/{item_id}')
-def update_task(item_id: str, item: TaskRequest) -> None:
-    r.set(f'tasks:{item_id}', json.dumps({
+def update_task(task_id: str, item: TaskRequest) -> None:
+    r.set(f'tasks:{task_id}', json.dumps({
         'name': item.name,
         'description': item.description,
     }))
 
 
 @app.post('/tasks')
-def create_task(item: TaskRequest):
-    item_id = str(len(tasks) + 1)
-    tasks[item_id] = Task(
-        item_id=item_id,
-        name=item.name,
-        description=item.description,
-    )
+def create_task(request: TaskRequest):
+    id = uuid4()
+    r.json().set(f'tasks:{id}', '$', {
+        'name': request.name,
+        'description': request.description,
+    })
 
 
 def delete_tasks():
