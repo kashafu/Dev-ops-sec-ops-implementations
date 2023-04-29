@@ -2,13 +2,11 @@ version: "3.9"
 services:
   taskman:
     build: .
-    restart: always
-    command: bash -c "uvicorn taskman.main:app --reload --host 0.0.0.0 --port 8080"
-    volumes:
-      - .:/code
+    environment:
+      - REDIS_HOST=redis
     ports:
-      - "8080:8080"
+      - "8080:80"
     depends_on:
       - redis
   redis:
-    image: "redislabs/redismod"
+    image: "redis/redis-stack-server"
