@@ -1,4 +1,10 @@
-FROM python:3.9-slim
+FROM python:3.9
+
+RUN adduser taskman
+USER taskman
+
+RUN pip install --upgrade pip
+ENV PATH="/home/taskman/.local/bin:${PATH}"
 
 WORKDIR /code
 
