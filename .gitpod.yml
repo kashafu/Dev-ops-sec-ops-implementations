@@ -5,7 +5,6 @@ tasks:
   - name: taskman application
     command: projen dev
   - name: Redis
-    init: gp sync-await bundle
     command: redis-server
 
 ports:

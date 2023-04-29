@@ -13,7 +13,7 @@ app = FastAPI()
 
 
 def redis_client():
-    return Redis(host=getenv('localhost', 'redis'), port=6379, decode_responses=True)
+    return Redis(host=getenv('REDIS_HOST', 'localhost'), port=6379, decode_responses=True)
 
 
 class TaskRequest(BaseModel):
