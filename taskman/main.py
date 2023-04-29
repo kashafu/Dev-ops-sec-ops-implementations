@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 from uuid import uuid4
 from typing import Dict, List
+from typing_extensions import Annotated
+from os import getenv
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from pydantic import BaseModel
 from starlette.responses import RedirectResponse
-import redis
+from redis import Redis
 
 app = FastAPI()
 
-r = redis.Redis(host='redis', port=6379, decode_responses=True)
+def redis_client():
+    return Redis(host=getenv('REDIS_HOST', 'redis'), port=6379, decode_responses=True)
 
 
 class TaskRequest(BaseModel):
@@ -21,16 +24,13 @@ class Task(TaskRequest):
     id: str
 
 
-tasks: Dict[str, Task] = {}
-
-
 @app.get('/')
 def redirect_to_tasks() -> None:
     return RedirectResponse(url='/tasks')
 
 
 @app.get('/tasks')
-def get_tasks() -> List[Task]:
+def get_tasks(r: Annotated[Redis, Depends(redis_client)]) -> List[Task]:
     keys = r.keys()
 
     tasks = []
@@ -46,7 +46,7 @@ def get_tasks() -> List[Task]:
 
 
 @app.get('/tasks/{task_id}')
-def get_task(task_id: str) -> Task:
+def get_task(task_id: str, r: Annotated[Redis, Depends(redis_client)]) -> Task:
     task = r.json().get(f'tasks:{task_id}')
     return Task(
         id=task_id,
@@ -56,7 +56,7 @@ def get_task(task_id: str) -> Task:
 
 
 @app.put('/tasks/{item_id}')
-def update_task(task_id: str, item: TaskRequest) -> None:
+def update_task(task_id: str, item: TaskRequest, r: Annotated[Redis, Depends(redis_client)]) -> None:
     r.set(f'tasks:{task_id}', json.dumps({
         'name': item.name,
         'description': item.description,
@@ -64,13 +64,10 @@ def update_task(task_id: str, item: TaskRequest) -> None:
 
 
 @app.post('/tasks')
-def create_task(request: TaskRequest):
+def create_task(request: TaskRequest, r: Annotated[Redis, Depends(redis_client)]) -> str:
     id = uuid4()
     r.json().set(f'tasks:{id}', '$', {
         'name': request.name,
         'description': request.description,
     })
-
-
-def delete_tasks():
-    tasks.clear()
+    return str(id)

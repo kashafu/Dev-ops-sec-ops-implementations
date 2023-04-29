@@ -16,7 +16,8 @@ project = PythonProject(
         'pylint',
         'pytest',
         'pytest-cov',
-        'pytest-xdist'
+        'pytest-xdist',
+        'fakeredis[json]'
     ],
     github=False,
 )
