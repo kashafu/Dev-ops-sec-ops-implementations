@@ -2,7 +2,11 @@ image:
   file: .gitpod.Dockerfile
 
 tasks:
-  - command: docker-compose up
+  - name: taskman application
+    command: projen dev
+  - name: Redis
+    init: gp sync-await bundle
+    command: redis-server
 
 ports:
     - name: Backend
