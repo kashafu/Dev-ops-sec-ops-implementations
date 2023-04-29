@@ -2,7 +2,7 @@ image:
   file: .gitpod.Dockerfile
 
 tasks:
-  - command: projen dev
+  - command: docker-compose up
 
 ports:
     - name: Backend
