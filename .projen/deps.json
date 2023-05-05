@@ -5,6 +5,10 @@
       "type": "devenv"
     },
     {
+      "name": "fakeredis[json]",
+      "type": "devenv"
+    },
+    {
       "name": "projen",
       "version": "0.65.37",
       "type": "devenv"
@@ -27,6 +31,10 @@
     },
     {
       "name": "fastapi",
+      "type": "runtime"
+    },
+    {
+      "name": "redis",
       "type": "runtime"
     },
     {
