@@ -5,25 +5,19 @@ from os import getenv
 from typing_extensions import Annotated
 
 from fastapi import Depends, FastAPI
-from pydantic import BaseModel
 from starlette.responses import RedirectResponse
-from redis import Redis
+from .backends import Backend, RedisBackend
+from .model import Task, TaskRequest
 
 app = FastAPI()
 
 
-def redis_client():
-    return Redis(host=getenv('REDIS_HOST', 'localhost'), port=6379, decode_responses=True)
-
-
-class TaskRequest(BaseModel):
-    name: str
-    description: str
-
-
-class Task(TaskRequest):
-    id: str
-
+def get_backend() -> Backend:
+    backend_type = getenv('BACKEND', 'redis')
+    if backend_type == 'redis':
+        return RedisBackend()
+    else:
+        return null
 
 @app.get('/')
 def redirect_to_tasks() -> None:
@@ -31,8 +25,8 @@ def redirect_to_tasks() -> None:
 
 
 @app.get('/tasks')
-def get_tasks(redis: Annotated[Redis, Depends(redis_client)]) -> List[Task]:
-    keys = redis.keys()
+def get_tasks(backend: Annotated[Backend, Depends(get_backend())]) -> List[Task]:
+    keys = backend.keys()
 
     tasks = []
     for key in keys:
@@ -48,7 +42,7 @@ def get_tasks(redis: Annotated[Redis, Depends(redis_client)]) -> List[Task]:
 
 @app.get('/tasks/{task_id}')
 def get_task(task_id: str,
-             redis: Annotated[Redis, Depends(redis_client)]) -> Task:
+             backend: Annotated[Backend, Depends(get_backend())]) -> Task:
     task = redis.json().get(f'tasks:{task_id}')
     return Task(
         id=task_id,
@@ -69,7 +63,7 @@ def update_task(task_id: str,
 
 @app.post('/tasks')
 def create_task(request: TaskRequest,
-                redis: Annotated[Redis, Depends(redis_client)]) -> str:
+                backend: Annotated[Backend, Depends(get_backend())]) -> str:
     task_id = uuid4()
     redis.json().set(f'tasks:{task_id}', '$', {
         'name': request.name,
