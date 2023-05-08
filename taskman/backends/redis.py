@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from os import getenv
+from typing import List
 
 from redis import Redis
 from taskman import Task, TaskRequest
@@ -7,17 +8,20 @@ from .backend import Backend
 
 
 class RedisBackend(Backend):
-    def __init__(self) -> None:
-        self.redis = Redis(host=getenv('REDIS_HOST', 'localhost'),
-                           port=6379, decode_responses=True)
+    def __init__(
+            self,
+            redis=Redis(host=getenv('REDIS_HOST', 'localhost'),
+                        port=6379, decode_responses=True)
+    ) -> None:
+        self.redis = redis
 
-    def keys(self) -> list[str]:
+    def keys(self) -> List[str]:
         return self.redis.keys()
 
     def get(self, task_id: str) -> Task:
-        task = self.redis.json().get(task_id)
+        task = self.redis.json().get(f'tasks:{task_id}')
         return Task(
-            id=task_id[6:],
+            id=task_id,
             name=task['name'],
             description=task['description'],
         )

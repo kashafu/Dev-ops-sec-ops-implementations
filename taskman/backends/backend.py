@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from abc import ABC, abstractmethod
-from taskman import TaskRequest
+from typing import List
+from taskman import Task, TaskRequest
 
 
 class Backend(ABC):
 
     @abstractmethod
-    def keys(self) -> list[str]:
+    def keys(self) -> List[str]:
         pass
 
     @abstractmethod

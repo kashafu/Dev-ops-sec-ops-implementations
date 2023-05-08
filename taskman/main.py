@@ -1,23 +1,28 @@
 # -*- coding: utf-8 -*-
 from uuid import uuid4
-from typing import List
+from typing import List, Optional
 from os import getenv
 from typing_extensions import Annotated
 
 from fastapi import Depends, FastAPI
 from starlette.responses import RedirectResponse
-from .backends import Backend, RedisBackend
+from .backends import Backend, RedisBackend, MemoryBackend
 from .model import Task, TaskRequest
 
 app = FastAPI()
 
+my_backend: Optional[Backend] = None
+
 
 def get_backend() -> Backend:
-    backend_type = getenv('BACKEND', 'redis')
-    if backend_type == 'redis':
-        return RedisBackend()
-    else:
-        return None
+    global my_backend
+    if my_backend is None:
+        backend_type = getenv('BACKEND', 'redis')
+        if backend_type == 'redis':
+            my_backend = RedisBackend()
+        else:
+            my_backend = MemoryBackend()
+    return my_backend
 
 
 @app.get('/')
@@ -51,6 +56,6 @@ def update_task(task_id: str,
 @app.post('/tasks')
 def create_task(request: TaskRequest,
                 backend: Annotated[Backend, Depends(get_backend)]) -> str:
-    task_id = uuid4()
+    task_id = str(uuid4())
     backend.set(task_id, request)
-    return str(task_id)
+    return task_id
