@@ -15,7 +15,7 @@ my_backend: Optional[Backend] = None
 
 
 def get_backend() -> Backend:
-    global my_backend
+    global my_backend  # pylint: disable=global-statement
     if my_backend is None:
         backend_type = getenv('BACKEND', 'redis')
         if backend_type == 'redis':
