@@ -17,7 +17,8 @@ def get_backend() -> Backend:
     if backend_type == 'redis':
         return RedisBackend()
     else:
-        return null
+        return None
+
 
 @app.get('/')
 def redirect_to_tasks() -> None:
@@ -25,48 +26,31 @@ def redirect_to_tasks() -> None:
 
 
 @app.get('/tasks')
-def get_tasks(backend: Annotated[Backend, Depends(get_backend())]) -> List[Task]:
+def get_tasks(backend: Annotated[Backend, Depends(get_backend)]) -> List[Task]:
     keys = backend.keys()
 
     tasks = []
     for key in keys:
-        task = redis.json().get(key)
-        task_id = key[6:]
-        tasks.append(Task(
-            id=task_id,
-            name=task['name'],
-            description=task['description'],
-        ))
+        tasks.append(backend.get(key))
     return tasks
 
 
 @app.get('/tasks/{task_id}')
 def get_task(task_id: str,
-             backend: Annotated[Backend, Depends(get_backend())]) -> Task:
-    task = redis.json().get(f'tasks:{task_id}')
-    return Task(
-        id=task_id,
-        name=task['name'],
-        description=task['description'],
-    )
+             backend: Annotated[Backend, Depends(get_backend)]) -> Task:
+    return backend.get(task_id)
 
 
 @app.put('/tasks/{item_id}')
 def update_task(task_id: str,
-                item: TaskRequest,
-                redis: Annotated[Redis, Depends(redis_client)]) -> None:
-    redis.json().set(f'tasks:{task_id}', {
-        'name': item.name,
-        'description': item.description,
-    })
+                request: TaskRequest,
+                backend: Annotated[Backend, Depends(get_backend)]) -> None:
+    backend.set(task_id, request)
 
 
 @app.post('/tasks')
 def create_task(request: TaskRequest,
-                backend: Annotated[Backend, Depends(get_backend())]) -> str:
+                backend: Annotated[Backend, Depends(get_backend)]) -> str:
     task_id = uuid4()
-    redis.json().set(f'tasks:{task_id}', '$', {
-        'name': request.name,
-        'description': request.description,
-    })
+    backend.set(task_id, request)
     return str(task_id)
