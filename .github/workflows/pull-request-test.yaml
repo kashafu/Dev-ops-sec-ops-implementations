@@ -42,6 +42,11 @@ jobs:
        #Exercise 2 
        #2- Submit the results to a service measuring the code by CODE-CV
       - name: Upload coverage report to Codecov
-        uses: codecov/codecov-action@v2
-        with:
-          token: 558fc041-f1a8-4e5f-b3bb-130ce9533fad
+        run: curl -Os https://uploader.codecov.io/latest/macos/codecov
+          chmod +x codecov
+          ./codecov -t ${CODECOV_TOKEN} 
+    
+      # - name: Upload coverage report to Codecov
+      #   uses: codecov/codecov-action@v2
+      #   with:
+      #     token: ${{ secrets.CODECV_TOKEN }}
