@@ -6,7 +6,7 @@ from typing_extensions import Annotated
 
 from fastapi import Depends, FastAPI
 from starlette.responses import RedirectResponse
-from .backends import Backend, RedisBackend, MemoryBackend
+from .backends import Backend, RedisBackend, MemoryBackend, GCSBackend
 from .model import Task, TaskRequest
 
 app = FastAPI()
@@ -20,6 +20,8 @@ def get_backend() -> Backend:
         backend_type = getenv('BACKEND', 'redis')
         if backend_type == 'redis':
             my_backend = RedisBackend()
+        elif backend_type == 'gcs':
+            my_backend = GCSBackend()
         else:
             my_backend = MemoryBackend()
     return my_backend
