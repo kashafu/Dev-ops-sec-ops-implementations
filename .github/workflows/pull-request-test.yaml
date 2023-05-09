@@ -26,7 +26,7 @@ jobs:
         run: pip install -r requirements-dev.txt
         
       #Exercise 1
-      #1- incorporate pytest-cov into our test run.
+      #1- pytest-cov into our test run.
       - name: Install pytest-xdist
         run: pip install pytest-xdist
 
