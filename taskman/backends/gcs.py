@@ -1,4 +1,4 @@
-from json import dumps, load
+from json import dump, load
 from os import getenv
 from typing import List
 
@@ -20,8 +20,8 @@ class GCSBackend(Backend):
 
     def get(self, task_id: str) -> Task:
         blob = self.bucket.blob(task_id)
-        with blob.open("r") as f:
-            data = load(f)
+        with blob.open("r") as file:
+            data = load(file)
             return Task(
                 id=task_id,
                 name=data["name"],
@@ -30,11 +30,11 @@ class GCSBackend(Backend):
 
     def set(self, task_id: str, request: TaskRequest):
         blob = self.bucket.blob(task_id)
-        with blob.open("w") as f:
-            f.write(dumps({
+        with blob.open("w") as file:
+            dump({
                 "name": request.name,
                 "description": request.description,
-            }))
+            }, file)
 
     def get_bucket_name(self):
         return getenv('BUCKET')
