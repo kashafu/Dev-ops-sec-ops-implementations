@@ -41,12 +41,14 @@ jobs:
 
        #Exercise 2 
        #2- Submit the results to a service measuring the code by CODE-CV
+      - name: Generate Report
+        run: |
+         pip install codecov
+         pip install pytest-cov
+         pytest --cov=./ --cov-report=xml
+         codecov
+
       - name: Upload coverage report to Codecov
-        run: curl -Os https://uploader.codecov.io/latest/macos/codecov
-          chmod +x codecov
-          ./codecov -t ${CODECOV_TOKEN} 
-    
-      # - name: Upload coverage report to Codecov
-      #   uses: codecov/codecov-action@v2
-      #   with:
-      #     token: ${{ secrets.CODECV_TOKEN }}
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECV_TOKEN }}
