@@ -40,6 +40,7 @@ jobs:
         run: pylint taskman
 
        #Exercise 2 
+       
        #2- Submit the results to a service measuring the code by CODE-CV
       - name: Generate Report
         run: |
