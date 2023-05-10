@@ -40,7 +40,7 @@ jobs:
         run: pylint taskman
 
        #Exercise 2 
-       
+
        #2- Submit the results to a service measuring the code by CODE-CV
       - name: Generate Report
         run: |
@@ -59,8 +59,10 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14'
+          
       - name: Install snyk
         run: npm install -g snyk
+
       - name: Scan for security vulnerabilities
         run: |
           snyk auth ${{ secrets.SNYK_TOKEN }}
