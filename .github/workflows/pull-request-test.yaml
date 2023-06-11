@@ -7,8 +7,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest  
+    env:
+      CI: true
     permissions:
       packages: write
+      id-token: 'write'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -84,3 +87,20 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/hs-heilbronn-devsecop-kis/my_package:${{ github.sha }}
+          
+      #5 - Authentication to Google Cloud
+      - id: 'auth'
+        name: Authentication to Google Cloud
+        uses: 'google-github-actions/auth@v0.4.0'
+        with:
+          workload_identity_provider: 'projects/70756149774/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+          service_account: 'hshn-devsecops-service-account@hs-heilbronn-devsecops.iam.gserviceaccount.com'
+
+
+      # - name: Google Auth
+      #   id: auth 
+      #   uses: 'google-github-actions/auth@v1'
+      #   with:
+      #     workload_identity_provider: '${{ secrets.HS_PROVIDER }}'
+      #     service_account: '${{ secrets.HS_SERVICE_ACCOUNT }}
+
