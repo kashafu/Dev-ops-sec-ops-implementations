@@ -1,6 +1,9 @@
-name: Check with linter on PR
+name: DevOps and SecOops Exercises
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     types: [opened]
 
@@ -9,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest  
     env:
       CI: true
+      REGION: europe-west3
     permissions:
       packages: write
       id-token: 'write'
@@ -72,7 +76,7 @@ jobs:
         run: |
           snyk auth ${{ secrets.SNYK_TOKEN }}
           snyk test --file=requirements.txt
-
+    
     #4 - Build a container and pushing it to the github container registry.
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -86,9 +90,13 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/hs-heilbronn-devsecop-kis/my_package:${{ github.sha }}
-          
-      #5 - Authentication to Google Cloud
+          # tags: ghcr.io/hs-heilbronn-devsecop-kis/my_package:${{ github.sha }}
+          tags: ghcr.io/hs-heilbronn-devsecop-kis/taskman:latest
+        if: github.event.pull_request.merged == true
+
+    #Exercise 3
+    
+      #1 - Authentication to Google Cloud
       - id: 'auth'
         name: Authentication to Google Cloud
         uses: 'google-github-actions/auth@v0.4.0'
@@ -96,15 +104,16 @@ jobs:
           workload_identity_provider: '${{ secrets.HS_PROVIDER }}'
           service_account: '${{ secrets.HS_SERVICE_ACCOUNT }}'
           
-      #6 - Authentication to Google Cloud
+      #2 - Authentication to Google Cloud
       - id: 'deploy'
         name: Deploy to Cloud Run
         uses: 'google-github-actions/deploy-cloudrun@v1'
         with:
           service: 'taskman-hs-heilbronn-devsecop-kis'
           source: '.'
+          # image: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/cloud-run-source-deploy/taskman-hs-heilbronn-devsecop-kis@sha256:90bbf504abd3c264ccfe40b111e3617e2e2ff58fee9c12c8f97b904db3274fac
           # image: ghcr.io/hs-heilbronn-devsecop-kis/my_package:5c45e948ed9dde7ef9504bdcf1eb36db4155a8db:latest
-          region: europe-west3
+          region: ${{env.REGION}}
           env_vars:
             BACKEND=memory
 
