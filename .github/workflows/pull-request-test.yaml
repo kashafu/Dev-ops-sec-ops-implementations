@@ -84,3 +84,9 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/hs-heilbronn-devsecop-kis/my_package:${{ github.sha }}
+          
+      - name: Authenticate to Google Cloud
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: 'projects/70756149774/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+          service_account: 'hshn-devsecops-service-account@hs-heilbronn-devsecops.iam.gserviceaccount.com'
