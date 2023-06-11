@@ -1,0 +1,48 @@
+name: DevOps and SecOops Exercises
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  
+    env:
+      CI: true
+      REGION: europe-west3
+
+    permissions:
+      packages: write
+      id-token: 'write'
+      
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      #1 - Authentication to Google Cloud
+      - id: 'auth'
+        name: Authentication to Google Cloud
+        uses: 'google-github-actions/auth@v0.4.0'
+        with:
+          workload_identity_provider: '${{ secrets.HS_PROVIDER }}'
+          service_account: '${{ secrets.HS_SERVICE_ACCOUNT }}'
+          
+      #2 - Authentication to Google Cloud
+      - id: 'deploy'
+        name: Deploy to Cloud Run
+        uses: 'google-github-actions/deploy-cloudrun@v1'
+        with:
+          service: 'taskman-hs-heilbronn-devsecop-kis'
+          source: '.'
+          # image: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/cloud-run-source-deploy/taskman-hs-heilbronn-devsecop-kis@sha256:90bbf504abd3c264ccfe40b111e3617e2e2ff58fee9c12c8f97b904db3274fac
+          # image: ghcr.io/hs-heilbronn-devsecop-kis/my_package:5c45e948ed9dde7ef9504bdcf1eb36db4155a8db:latest
+          region: ${{env.REGION}}
+          env_vars:
+            BACKEND=memory
+
+      - name: 'Use output'
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
