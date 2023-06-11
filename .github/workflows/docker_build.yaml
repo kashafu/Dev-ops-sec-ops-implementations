@@ -90,8 +90,8 @@ jobs:
         with:
           context: .
           push: true
-          # tags: ghcr.io/hs-heilbronn-devsecop-kis/my_package:${{ github.sha }}
-          tags: ghcr.io/hs-heilbronn-devsecop-kis/taskman:latest
+          tags: ghcr.io/hs-heilbronn-devsecop-kis/my_package:${{ github.sha }}
+        #   tags: ghcr.io/hs-heilbronn-devsecop-kis/taskman:latest
         # if: github.event.pull_request.merged == true
 
   

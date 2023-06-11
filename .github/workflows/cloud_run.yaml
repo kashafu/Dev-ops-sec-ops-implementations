@@ -37,8 +37,8 @@ jobs:
         uses: 'google-github-actions/deploy-cloudrun@v1'
         with:
           service: 'taskman-hs-heilbronn-devsecop-kis'
-          source: '.'
-          # image: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/cloud-run-source-deploy/taskman-hs-heilbronn-devsecop-kis@sha256:90bbf504abd3c264ccfe40b111e3617e2e2ff58fee9c12c8f97b904db3274fac
+          # source: '.'
+          image: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/cloud-run-source-deploy/taskman-hs-heilbronn-devsecop-kis@sha256:134c8ec9a373253d6f5d36207212bf713d1399302d0ab7925c44e5f1d184942c
           # image: ghcr.io/hs-heilbronn-devsecop-kis/my_package:5c45e948ed9dde7ef9504bdcf1eb36db4155a8db:latest
           region: ${{env.REGION}}
           env_vars:
