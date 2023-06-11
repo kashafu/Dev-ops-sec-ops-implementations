@@ -1,4 +1,4 @@
-name: DevOps and SecOops Exercises
+name: Docker Images , CodeCV, SYNK - Exercise 1 and 2.
 
 on:
   push:
@@ -12,13 +12,29 @@ jobs:
     runs-on: ubuntu-latest  
     env:
       CI: true
+      REGION: europe-west3
     permissions:
       packages: write
+      id-token: 'write'
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
+      #Exercise 1
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install development dependencies
+        run: pip install -r requirements-dev.txt
+        
       #1- pytest-cov into our test run.
       - name: Install pytest-xdist
         run: pip install pytest-xdist

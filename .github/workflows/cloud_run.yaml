@@ -1,4 +1,4 @@
-name: DevOps and SecOops Exercises
+name: Google Cloud Run - Exercise 3
 
 on:
   push:
