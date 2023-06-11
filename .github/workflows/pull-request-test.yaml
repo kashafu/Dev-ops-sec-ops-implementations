@@ -96,13 +96,14 @@ jobs:
           workload_identity_provider: '${{ secrets.HS_PROVIDER }}'
           service_account: '${{ secrets.HS_SERVICE_ACCOUNT }}'
           
-      #6 - Deploy to Google Cloud
+      #6 - Authentication to Google Cloud
       - id: 'deploy'
         name: Deploy to Cloud Run
         uses: 'google-github-actions/deploy-cloudrun@v1'
         with:
           service: 'taskman-hs-heilbronn-devsecop-kis'
-          image: ghcr.io/hs-heilbronn-devsecop-kis/my_package:5c45e948ed9dde7ef9504bdcf1eb36db4155a8db
+          # source: '.'
+          image: ghcr.io/hs-heilbronn-devsecop-kis/my_package:5c45e948ed9dde7ef9504bdcf1eb36db4155a8db:latest
           region: europe-west3
           env_vars:
             BACKEND=memory
