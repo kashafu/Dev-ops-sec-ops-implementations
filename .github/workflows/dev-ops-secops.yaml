@@ -1,4 +1,4 @@
-name: Docker Images , CodeCV, SYNK - Exercise 1 and 2.
+name: DevOps and SecOps Exercises
 
 on:
   push:
