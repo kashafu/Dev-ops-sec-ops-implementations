@@ -105,12 +105,6 @@ jobs:
           workload_identity_provider: '${{ secrets.HS_PROVIDER }}'
           service_account: '${{ secrets.HS_SERVICE_ACCOUNT }}'
           
-      - name: Build and push Docker image to Google Artifact Registry
-        run: |
-          docker build -t local-image .
-          docker tag local-image europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/cloud-run-source-deploy/taskman-hs-heilbronn-devsecop-kis@sha256:10ec50dade13f3400d2d70e148129210f35ffd15b81f5acca91220fbe3e5a527
-          docker push europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/cloud-run-source-deploy/taskman-hs-heilbronn-devsecop-kis@sha256:10ec50dade13f3400d2d70e148129210f35ffd15b81f5acca91220fbe3e5a527
-      
       #2 - Authentication to Google Cloud
       - id: 'deploy'
         name: Deploy to Cloud Run
@@ -118,7 +112,7 @@ jobs:
         with:
           service: 'taskman-hs-heilbronn-devsecop-kis'
           region: ${{env.REGION}}
-          image: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/cloud-run-source-deploy/taskman-hs-heilbronn-devsecop-kis@sha256:10ec50dade13f3400d2d70e148129210f35ffd15b81f5acca91220fbe3e5a527
+          # image: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/cloud-run-source-deploy/taskman-hs-heilbronn-devsecop-kis@sha256:10ec50dade13f3400d2d70e148129210f35ffd15b81f5acca91220fbe3e5a527
           env_vars: BACKEND=memory
 
       - name: 'Use output'
