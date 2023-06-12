@@ -163,6 +163,6 @@ jobs:
         uses: 'google-github-actions/deploy-cloudrun@v1'
         with:
          service: 'taskman-hs-heilbronn-devsecop-kis'
-         image: 'docker.io/kashafu/hs-heilbronn-devsecop-kis-taskman:${{ steps.meta.outputs.tags }}'
+         image: 'docker.io/kashafu/hs-heilbronn-devsecop-kis-taskman:latest'
          env_vars: BACKEND=memory
          region: ${{env.REGION}}
