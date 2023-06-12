@@ -13,6 +13,7 @@ jobs:
     env:
       CI: true
       REGION: europe-west3
+      SERVICE: taskman-hs-heilbronn-devsecop-kis
     permissions:
       contents: 'read'
       packages: write
@@ -100,7 +101,7 @@ jobs:
         #1 - Authentication to Google Cloud
       - id: 'auth'
         name: Authentication to Google Cloud
-        uses: 'google-github-actions/auth@v1'
+        uses: 'google-github-actions/auth@v0'
         with:
           workload_identity_provider: '${{ secrets.HS_PROVIDER }}'
           service_account: '${{ secrets.HS_SERVICE_ACCOUNT }}'
@@ -110,10 +111,11 @@ jobs:
         name: Deploy to Cloud Run
         uses: 'google-github-actions/deploy-cloudrun@v1'
         with:
-          service: 'taskman-hs-heilbronn-devsecop-kis'
+          service: ${{ env.SERVICE }}
           region: ${{env.REGION}}
+          source: ./
           # image: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/cloud-run-source-deploy/taskman-hs-heilbronn-devsecop-kis@sha256:10ec50dade13f3400d2d70e148129210f35ffd15b81f5acca91220fbe3e5a527
-          env_vars: BACKEND=memory
+          # env_vars: BACKEND=memory
 
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
