@@ -1,4 +1,4 @@
-name: Docker Images , CodeCV, SYNK - Exercise 1 and 2.
+name: DevOps and SecOps Exercises
 
 on:
   push:
@@ -112,8 +112,9 @@ jobs:
         with:
           service: 'taskman-hs-heilbronn-devsecop-kis'
           region: ${{env.REGION}}
-          source: '.'
+          # image: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/cloud-run-source-deploy/taskman-hs-heilbronn-devsecop-kis@sha256:10ec50dade13f3400d2d70e148129210f35ffd15b81f5acca91220fbe3e5a527
           env_vars: BACKEND=memory
 
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
+        
