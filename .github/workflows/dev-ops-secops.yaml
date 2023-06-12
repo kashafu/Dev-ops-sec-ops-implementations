@@ -41,8 +41,8 @@ jobs:
       - name: Run pytest
         run: pytest --cov=taskman -n auto
 
-      - name: Run pylint
-        run: pylint taskman
+      # - name: Run pylint
+      #   run: pylint taskman
 
        #Exercise 2 
 

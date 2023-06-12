@@ -24,9 +24,9 @@ class TaskRequest(BaseModel):
 class Task(TaskRequest):
     id: str
 
-@app.get("/")
-async def root():
-    return {"message": "Hello Kashaf"}
+@app.get('/')
+def redirect_to_tasks() -> None:
+   return {"message": "Hello Kashaf"}
 
 # @app.get('/')
 # def redirect_to_tasks() -> None:
