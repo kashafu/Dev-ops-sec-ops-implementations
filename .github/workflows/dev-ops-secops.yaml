@@ -149,8 +149,7 @@ jobs:
         with:
           context: .
           push: true
-          # tags: ${{ steps.meta.outputs.tags }}
-          tags: latest
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Authentication to Cloud Run
@@ -164,6 +163,6 @@ jobs:
         uses: 'google-github-actions/deploy-cloudrun@v1'
         with:
          service: 'taskman-hs-heilbronn-devsecop-kis'
-         image: 'docker.io/kashafu/hs-heilbronn-devsecop-kis-taskman:latest'
+         image: 'docker.io/kashafu/hs-heilbronn-devsecop-kis-taskman:${{ steps.meta.outputs.tags }}'
          env_vars: BACKEND=memory
          region: ${{env.REGION}}
