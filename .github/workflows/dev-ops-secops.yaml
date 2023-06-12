@@ -76,47 +76,7 @@ jobs:
           snyk auth ${{ secrets.SNYK_TOKEN }}
           snyk test --file=requirements.txt
     
-    # #4 - Build a container and pushing it to the github container registry.
-    #   - name: Login to GitHub Container Registry
-    #     uses: docker/login-action@v1
-    #     with:
-    #       registry: ${{ secrets.REGISTRY }}
-    #       username: ${{ github.actor }}
-    #       password: ${{ secrets.GITHUB_TOKEN }}
-
-    #   - name: Build and push Docker image
-    #     uses: docker/build-push-action@v2
-    #     with:
-    #       context: .
-    #       push: true
-    #       tags: ghcr.io/hs-heilbronn-devsecop-kis/my_package:${{ github.sha }}
-    #     #   tags: ghcr.io/hs-heilbronn-devsecop-kis/taskman:latest
-    #     # if: github.event.pull_request.merged == true
-
-    # #Exercise 3
-    
-    #     #1 - Authentication to Google Cloud
-    #   - id: 'auth'
-    #     name: Authentication to Google Cloud
-    #     uses: 'google-github-actions/auth@v0'
-    #     with:
-    #       workload_identity_provider: '${{ secrets.HS_PROVIDER }}'
-    #       service_account: '${{ secrets.HS_SERVICE_ACCOUNT }}'
-          
-    #   #2 - Authentication to Google Cloud
-    #   - id: 'deploy'
-    #     name: Deploy to Cloud Run
-    #     uses: 'google-github-actions/deploy-cloudrun@v1'
-    #     with:
-    #       service: ${{ env.SERVICE }}
-    #       region: ${{env.REGION}}
-    #       image: 'docker.io/kashafu/taskman-hs-heilbronn-devsecop-kis:main'
-    #       source: '.'
-    #       # image: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/cloud-run-source-deploy/taskman-hs-heilbronn-devsecop-kis@sha256:10ec50dade13f3400d2d70e148129210f35ffd15b81f5acca91220fbe3e5a527
-    #       # env_vars: BACKEND=memory
-
-    #   - name: 'Use output'
-    #     run: 'curl "${{ steps.deploy.outputs.url }}"'
+    #4 - Build a container and pushing it to the github container registry.
         
       - name: Log in to the Container registry
         uses:  docker/login-action@v1
@@ -152,6 +112,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      #Exercise 3
+      
       - name: Authentication to Cloud Run
         uses: 'google-github-actions/auth@v1'
         with:
