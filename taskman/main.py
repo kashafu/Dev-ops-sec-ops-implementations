@@ -26,7 +26,7 @@ class Task(TaskRequest):
 
 # @app.get('/')
 # def redirect_to_tasks() -> None:
-#    return {"message": "Hello Kashaf"}
+# return {"message": "Hello Kashaf"}
 
 @app.get('/')
 def redirect_to_tasks() -> None:
