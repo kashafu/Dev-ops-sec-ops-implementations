@@ -133,3 +133,6 @@ jobs:
          image: 'docker.io/kashafu/hs-heilbronn-devsecop-kis:latest'
          env_vars: BACKEND=memory
          region: ${{env.REGION}}
+
+      - name: 'Output'
+        run: 'curl "${{ steps.deploy.outputs.url }}"' 
