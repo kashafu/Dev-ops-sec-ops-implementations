@@ -8,6 +8,14 @@ from fastapi import Depends, FastAPI
 from pydantic import BaseModel
 from starlette.responses import RedirectResponse
 from redis import Redis
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import (
+    BatchSpanProcessor,
+    ConsoleSpanExporter,
+)
+import fastapi
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
 app = FastAPI()
 
@@ -79,3 +87,16 @@ def create_task(request: TaskRequest,
         'description': request.description,
     })
     return str(task_id)
+
+
+provider = TracerProvider()
+processor = BatchSpanProcessor(ConsoleSpanExporter())
+provider.add_span_processor(processor)
+
+# Sets the global default tracer provider
+trace.set_tracer_provider(provider)
+
+# Creates a tracer from the global tracer provider
+tracer = trace.get_tracer("my.tracer.name")
+
+FastAPIInstrumentor.instrument_app(app)
