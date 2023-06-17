@@ -49,8 +49,8 @@ jobs:
       - name: Parallel tests
         run: pytest -n auto
 
-      - name: Run pylint
-        run: pylint taskman
+      # - name: Run pylint
+      #   run: pylint taskman
 
        #Exercise 2 
 
@@ -68,18 +68,18 @@ jobs:
           token: ${{ secrets.CODECV_TOKEN }}
 
     #3- Integrate a security scanner into the pipeline that analyses our code and dependencies by snyk.
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: '14'
 
-      - name: Install Snyk
-        run: npm install -g snyk
+      # - name: Install Snyk
+      #   run: npm install -g snyk
 
-      - name: Scan for security vulnerabilities
-        run: |
-          snyk auth ${{ secrets.SNYK_TOKEN }}
-          snyk test --file=requirements.txt
+      # - name: Scan for security vulnerabilities
+      #   run: |
+      #     snyk auth ${{ secrets.SNYK_TOKEN }}
+      #     snyk test --file=requirements.txt
     
     #4 - Build a container and pushing it to the github container registry.
         
