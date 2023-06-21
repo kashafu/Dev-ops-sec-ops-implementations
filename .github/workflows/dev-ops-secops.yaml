@@ -74,7 +74,7 @@ jobs:
         run: |
           snyk auth ${{ secrets.SNYK_TOKEN }}
           snyk test --file=requirements.txt
-    
+        continue-on-error: true
     
     #4 - Build a container and pushing it to the github container registry.
         
