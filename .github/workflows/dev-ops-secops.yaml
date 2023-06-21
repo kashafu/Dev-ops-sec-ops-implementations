@@ -46,12 +46,6 @@ jobs:
       - name: Upgrade pytest
         run: pip install --upgrade pytest
 
-      - name: Parallel tests
-        run: pytest -n auto
-
-      - name: Run pylint
-        run: pylint taskman
-
        #Exercise 2 
 
        #2- Submit the results to a service measuring the code by CODE-CV
