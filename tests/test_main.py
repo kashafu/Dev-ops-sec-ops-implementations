@@ -1,43 +1,26 @@
-from fakeredis import FakeStrictRedis
-import unittest
-from starlette.testclient import TestClient
-
-from taskman.main import app
+from taskman.model import TaskRequest, Task
+from taskman.backends import MemoryBackend
+from taskman.main import create_task, get_task, get_tasks
 
 
-class TestApp(unittest.TestCase):
-    def setUp(self):
-        self.client = TestClient(app)
-
-    def test_hello_kashaf(self):
-        response = self.client.get("/kashaf")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {"message": "Hello Kashaf"})
-
-    # def test_redirect_to_tasks(self):
-    #     response = self.client.get("/")
-    #     self.assertEqual(response.status_code, 307)
-    #     self.assertEqual(response.headers["location"], "/tasks")
-
-    # def test_get_tasks(self):
-    #     response = self.client.get("/tasks")
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.json(), [])
-
-    # def test_get_task(self):
-    #     task_id = "123"
-    #     response = self.client.get(f"/tasks/{task_id}")
-    #     self.assertEqual(response.status_code, 404)
-
-    def test_create_task(self):
-        data = {"name": "New Task", "description": "Task description"}
-        response = self.client.post("/tasks", json=data)
-        self.assertEqual(response.status_code, 200)
-        task_id = response.text
-        self.assertTrue(task_id)
+def test_save_and_get_item():
+    backend = MemoryBackend()
+    id = create_task(TaskRequest(
+        name='Test Task',
+        description='Demo',
+    ), backend)
+    assert get_task(id, backend) == Task(name='Test Task', description='Demo', id=id)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
+def test_save_and_get_items():
+    backend = MemoryBackend()
+    create_task(TaskRequest(
+        name='Test Task',
+        description='Demo',
+    ), backend)
+    create_task(TaskRequest(
+        name='Test Task 2',
+        description='Demo 2',
+    ), backend)
+    tasks = get_tasks(backend)
+    assert len(tasks) == 2
