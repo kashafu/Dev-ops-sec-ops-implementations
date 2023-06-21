@@ -75,6 +75,7 @@ jobs:
           snyk auth ${{ secrets.SNYK_TOKEN }}
           snyk test --file=requirements.txt
     
+    
     #4 - Build a container and pushing it to the github container registry.
         
       - name: Log in to the Container registry
