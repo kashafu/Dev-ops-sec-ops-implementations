@@ -52,6 +52,7 @@ jobs:
       - name: Generate Report
         run: |
          pip install codecov
+         pip3 install httpx
          pip install pytest-cov
          pytest --cov=./ --cov-report=xml
          codecov

@@ -1,40 +1,50 @@
 # -*- coding: utf-8 -*-
 from uuid import uuid4
-from typing import List
+from typing import List, Optional
 from os import getenv
 from typing_extensions import Annotated
 
 from fastapi import Depends, FastAPI
+from starlette.responses import RedirectResponse
+from .backends import Backend, RedisBackend, MemoryBackend, GCSBackend
+from .model import Task, TaskRequest
 from pydantic import BaseModel
 from starlette.responses import RedirectResponse
 from redis import Redis
+
+import fastapi
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import (
     BatchSpanProcessor,
     ConsoleSpanExporter,
 )
-import fastapi
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.semconv.trace import SpanAttributes
+from opentelemetry.trace import get_current_span
+from opentelemetry.trace.status import StatusCode
 
 app = FastAPI()
 
-
-def redis_client():
-    return Redis(host=getenv('REDIS_HOST', 'localhost'), port=6379, decode_responses=True)
+my_backend: Optional[Backend] = None
 
 
-class TaskRequest(BaseModel):
-    name: str
-    description: str
+def get_backend() -> Backend:
+    global my_backend  # pylint: disable=global-statement
+    if my_backend is None:
+        backend_type = getenv('BACKEND', 'redis')
+        if backend_type == 'redis':
+            my_backend = RedisBackend()
+        elif backend_type == 'gcs':
+            my_backend = GCSBackend()
+        else:
+            my_backend = MemoryBackend()
+    return my_backend
 
+@app.get('/kashaf')
+def helloKashaf():
+    return {"message": "Hello Kashaf"}
 
-class Task(TaskRequest):
-    id: str
-
-# @app.get('/')
-# def redirect_to_tasks() -> None:
-# return {"message": "Hello Kashaf"}
 
 @app.get('/')
 def redirect_to_tasks() -> None:
@@ -42,52 +52,51 @@ def redirect_to_tasks() -> None:
 
 
 @app.get('/tasks')
-def get_tasks(redis: Annotated[Redis, Depends(redis_client)]) -> List[Task]:
-    keys = redis.keys()
+def get_tasks(backend: Annotated[Backend, Depends(get_backend)]) -> List[Task]:
+    keys = backend.keys()
+
+    current_span = trace.get_current_span()
+    print("This is to get current span. - Method One")
+    
+    if current_span:
+        span_context = current_span.get_span_context()
+        span_id = span_context.span_id if span_context else None
+        print("Current Span ID:", span_id)
+    else:
+        print("No active span.")
 
     tasks = []
     for key in keys:
-        task = redis.json().get(key)
-        task_id = key[6:]
-        tasks.append(Task(
-            id=task_id,
-            name=task['name'],
-            description=task['description'],
-        ))
+        tasks.append(backend.get(key))
+        
     return tasks
 
 
 @app.get('/tasks/{task_id}')
 def get_task(task_id: str,
-             redis: Annotated[Redis, Depends(redis_client)]) -> Task:
-    task = redis.json().get(f'tasks:{task_id}')
-    return Task(
-        id=task_id,
-        name=task['name'],
-        description=task['description'],
-    )
+             backend: Annotated[Backend, Depends(get_backend)]) -> Task:
+
+    current_span = trace.get_current_span()
+    if current_span:
+        current_span.set_attribute('task.id', task_id)
+        current_span.set_attribute('task.name', "This is Span - Method two")
+        current_span.set_attribute(SpanAttributes.HTTP_METHOD, "GET")
+    return backend.get(task_id)
 
 
 @app.put('/tasks/{item_id}')
 def update_task(task_id: str,
-                item: TaskRequest,
-                redis: Annotated[Redis, Depends(redis_client)]) -> None:
-    redis.json().set(f'tasks:{task_id}', {
-        'name': item.name,
-        'description': item.description,
-    })
+                request: TaskRequest,
+                backend: Annotated[Backend, Depends(get_backend)]) -> None:
+    backend.set(task_id, request)
 
 
 @app.post('/tasks')
 def create_task(request: TaskRequest,
-                redis: Annotated[Redis, Depends(redis_client)]) -> str:
-    task_id = uuid4()
-    redis.json().set(f'tasks:{task_id}', '$', {
-        'name': request.name,
-        'description': request.description,
-    })
-    return str(task_id)
-
+                backend: Annotated[Backend, Depends(get_backend)]) -> str:
+    task_id = str(uuid4())
+    backend.set(task_id, request)
+    return task_id
 
 provider = TracerProvider()
 processor = BatchSpanProcessor(ConsoleSpanExporter())
