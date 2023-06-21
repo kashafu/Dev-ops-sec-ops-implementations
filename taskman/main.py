@@ -16,7 +16,7 @@ from opentelemetry.sdk.trace.export import (
 import fastapi
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry import trace
-from opentelemetry.trace import NonRecordingSpan, SpanContext, TraceFlags
+from opentelemetry.semconv.trace import SpanAttributes
 
 app = FastAPI()
 
@@ -51,10 +51,11 @@ def get_tasks(redis: Annotated[Redis, Depends(redis_client)]) -> List[Task]:
         task = redis.json().get(key)
         task_id = key[6:]
        
-    current_span = tracer.current_span()
+    current_span = trace.get_current_span()
     if current_span:
         current_span.set_tag('task.id', task_id)
         current_span.name('task.name', "This is SPAN one")
+        current_span.set_attribute(SpanAttributes.HTTP_METHOD, "GET")
 
         tasks.append(Task(
             id=task_id,
@@ -69,10 +70,11 @@ def get_task(task_id: str,
              redis: Annotated[Redis, Depends(redis_client)]) -> Task:
     task = redis.json().get(f'tasks:{task_id}')
 
-    current_span = tracer.current_span()
+    current_span = trace.get_current_span()
     if current_span:
         current_span.set_tag('task.id', task_id)
         current_span.name('task.name', "This is SPAN two")
+        current_span.set_attribute(SpanAttributes.HTTP_METHOD, "GET")
 
     return Task(
         id=task_id,
