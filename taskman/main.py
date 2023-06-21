@@ -53,8 +53,8 @@ def get_tasks(redis: Annotated[Redis, Depends(redis_client)]) -> List[Task]:
        
     current_span = trace.get_current_span()
     if current_span:
-        current_span.set_tag('task.id', task_id)
-        current_span.name('task.name', "This is SPAN one")
+        current_span.set_attribute('task.id', task_id)
+        current_span.set_attribute('task.name', "This is Span one")
         current_span.set_attribute(SpanAttributes.HTTP_METHOD, "GET")
 
         tasks.append(Task(
@@ -72,8 +72,8 @@ def get_task(task_id: str,
 
     current_span = trace.get_current_span()
     if current_span:
-        current_span.set_tag('task.id', task_id)
-        current_span.name('task.name', "This is SPAN two")
+        current_span.set_attribute('task.id', task_id)
+        current_span.set_attribute('task.name', "This is Span two")
         current_span.set_attribute(SpanAttributes.HTTP_METHOD, "GET")
 
     return Task(
