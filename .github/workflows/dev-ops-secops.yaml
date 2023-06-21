@@ -53,6 +53,7 @@ jobs:
         run: |
          pip install codecov
          pip install pytest-cov
+         pip3 install httpx
          pytest --cov=./ --cov-report=xml
          codecov
 
