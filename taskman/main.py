@@ -3,7 +3,6 @@ from uuid import uuid4
 from typing import List
 from os import getenv
 from typing_extensions import Annotated
-
 from fastapi import Depends, FastAPI
 from pydantic import BaseModel
 from starlette.responses import RedirectResponse
@@ -16,6 +15,8 @@ from opentelemetry.sdk.trace.export import (
 )
 import fastapi
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry import trace
+from opentelemetry.trace import NonRecordingSpan, SpanContext, TraceFlags
 
 app = FastAPI()
 
@@ -53,6 +54,7 @@ def get_tasks(redis: Annotated[Redis, Depends(redis_client)]) -> List[Task]:
     current_span = tracer.current_span()
     if current_span:
         current_span.set_tag('task.id', task_id)
+        current_span.name('task.name', "This is SPAN one")
 
         tasks.append(Task(
             id=task_id,
@@ -70,6 +72,7 @@ def get_task(task_id: str,
     current_span = tracer.current_span()
     if current_span:
         current_span.set_tag('task.id', task_id)
+        current_span.name('task.name', "This is SPAN two")
 
     return Task(
         id=task_id,
