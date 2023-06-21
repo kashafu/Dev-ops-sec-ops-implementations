@@ -15,8 +15,8 @@ from opentelemetry.sdk.trace.export import (
 )
 import fastapi
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry import trace
 from opentelemetry.semconv.trace import SpanAttributes
+from opentelemetry.trace import get_current_span
 
 app = FastAPI()
 
@@ -33,9 +33,9 @@ class TaskRequest(BaseModel):
 class Task(TaskRequest):
     id: str
 
-# @app.get('/')
-# def redirect_to_tasks() -> None:
-# return {"message": "Hello Kashaf"}
+@app.get('/kashaf')
+def helloKashaf():
+    return {"message": "Hello Kashaf"}
 
 @app.get('/')
 def redirect_to_tasks() -> None:
@@ -51,11 +51,13 @@ def get_tasks(redis: Annotated[Redis, Depends(redis_client)]) -> List[Task]:
         task = redis.json().get(key)
         task_id = key[6:]
        
-    current_span = trace.get_current_span()
-    if current_span:
-        current_span.set_attribute('task.id', task_id)
-        current_span.set_attribute('task.name', "This is Span one")
-        current_span.set_attribute(SpanAttributes.HTTP_METHOD, "GET")
+    current_span = get_current_span(trace.DEFAULT_TRACER_PROVIDER.get_tracer(__name__))
+    print("This is to get current span.")
+
+    if current_span.is_recording():
+        print("Current Span: ", current_span.get_span_context().span_id)
+    else:
+        print("No active span.")
 
         tasks.append(Task(
             id=task_id,
@@ -73,7 +75,7 @@ def get_task(task_id: str,
     current_span = trace.get_current_span()
     if current_span:
         current_span.set_attribute('task.id', task_id)
-        current_span.set_attribute('task.name', "This is Span two")
+        current_span.set_attribute('task.name', "This is Span - Defining")
         current_span.set_attribute(SpanAttributes.HTTP_METHOD, "GET")
 
     return Task(
