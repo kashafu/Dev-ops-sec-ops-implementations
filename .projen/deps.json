@@ -34,6 +34,22 @@
       "type": "runtime"
     },
     {
+      "name": "google-cloud-storage",
+      "type": "runtime"
+    },
+    {
+      "name": "opentelemetry-api",
+      "type": "runtime"
+    },
+    {
+      "name": "opentelemetry-instrumentation-fastapi",
+      "type": "runtime"
+    },
+    {
+      "name": "opentelemetry-sdk",
+      "type": "runtime"
+    },
+    {
       "name": "redis",
       "type": "runtime"
     },
