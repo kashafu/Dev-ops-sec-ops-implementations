@@ -46,18 +46,13 @@ jobs:
       - name: Upgrade pytest
         run: pip install --upgrade pytest
 
-      - name: Parallel tests
-        run: pytest -n auto
-
-      # - name: Run pylint
-      #   run: pylint taskman
-
        #Exercise 2 
 
        #2- Submit the results to a service measuring the code by CODE-CV
       - name: Generate Report
         run: |
          pip install codecov
+         pip3 install httpx
          pip install pytest-cov
          pytest --cov=./ --cov-report=xml
          codecov
@@ -68,18 +63,19 @@ jobs:
           token: ${{ secrets.CODECV_TOKEN }}
 
     #3- Integrate a security scanner into the pipeline that analyses our code and dependencies by snyk.
-      # - name: Set up Node.js
-      #   uses: actions/setup-node@v2
-      #   with:
-      #     node-version: '14'
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
 
-      # - name: Install Snyk
-      #   run: npm install -g snyk
+      - name: Install Snyk
+        run: npm install -g snyk
 
-      # - name: Scan for security vulnerabilities
-      #   run: |
-      #     snyk auth ${{ secrets.SNYK_TOKEN }}
-      #     snyk test --file=requirements.txt
+      - name: Scan for security vulnerabilities
+        run: |
+          snyk auth ${{ secrets.SNYK_TOKEN }}
+          snyk test --file=requirements.txt
+        continue-on-error: true
     
     #4 - Build a container and pushing it to the github container registry.
         
