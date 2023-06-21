@@ -22,3 +22,9 @@ github:
         master: true
         pullRequests: false
         addComment: false
+
+jetbrains:
+  intellij:
+    plugins:
+      - Pythonid
+      
