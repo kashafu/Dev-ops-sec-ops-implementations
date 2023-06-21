@@ -49,6 +49,11 @@ def get_tasks(redis: Annotated[Redis, Depends(redis_client)]) -> List[Task]:
     for key in keys:
         task = redis.json().get(key)
         task_id = key[6:]
+       
+    current_span = tracer.current_span()
+    if current_span:
+        current_span.set_tag('task.id', task_id)
+
         tasks.append(Task(
             id=task_id,
             name=task['name'],
@@ -61,6 +66,11 @@ def get_tasks(redis: Annotated[Redis, Depends(redis_client)]) -> List[Task]:
 def get_task(task_id: str,
              redis: Annotated[Redis, Depends(redis_client)]) -> Task:
     task = redis.json().get(f'tasks:{task_id}')
+
+    current_span = tracer.current_span()
+    if current_span:
+        current_span.set_tag('task.id', task_id)
+
     return Task(
         id=task_id,
         name=task['name'],
